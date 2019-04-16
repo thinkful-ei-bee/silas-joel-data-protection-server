@@ -251,7 +251,7 @@ function seedThingsTables(db, users, things, reviews=[]) {
   // use transaction to group queries and auto rollback on failure
   return db.transaction(async transaction => {
     await seedUsers(transaction, users)
-    await db.into('thingful_things').insert(things)
+    await transaction.into('thingful_things').insert(things)
     // update the auto sequence to match the forced id values
     await transaction.raw(
       `SELECT setval('thingful_things_id_seq', ?)`,
@@ -262,9 +262,7 @@ function seedThingsTables(db, users, things, reviews=[]) {
 }
 
 function seedMaliciousThing(db, user, thing) {
-  return db
-    .into('thingful_users')
-    .insert([user])
+  return seedUsers(db, [user])
     .then(() =>
       db
         .into('thingful_things')
@@ -290,4 +288,5 @@ module.exports = {
   seedThingsTables,
   seedMaliciousThing,
   makeAuthHeader,
+  seedUsers
 }
