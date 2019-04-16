@@ -252,6 +252,7 @@ function seedThingsTables(db, users, things, reviews=[]) {
   return db.transaction(async transaction => {
     await seedUsers(transaction, users)
     await transaction.into('thingful_things').insert(things)
+    await transaction.into('thingful_reviews').insert(reviews)
     // update the auto sequence to match the forced id values
     await transaction.raw(
       `SELECT setval('thingful_things_id_seq', ?)`,

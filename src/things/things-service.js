@@ -82,10 +82,12 @@ const ThingsService = {
   },
 
   serializeThingReviews(reviews) {
+    console.log('serializeThingReviews', reviews.length)
     return reviews.map(this.serializeThingReview)
   },
 
   serializeThingReview(review) {
+    console.log('SERIALIZETHINGREVIEW ===')
     const reviewTree = new Treeize()
 
     // Some light hackiness to allow for the fact that `treeize`
