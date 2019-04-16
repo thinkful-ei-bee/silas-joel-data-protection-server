@@ -248,17 +248,17 @@ function seedUsers(db, users) {
 }
 
 function seedThingsTables(db, users, things, reviews=[]) {
-  return db
-    .into('thingful_users')
-    .insert(users)
-    .then(() =>
-      db
-        .into('thingful_things')
-        .insert(things)
+  // use transaction to group queries and auto rollback on failure
+  return db.transaction(async transaction => {
+    await seedUsers(transaction, users)
+    await db.into('thingful_things').insert(things)
+    // update the auto sequence to match the forced id values
+    await transaction.raw(
+      `SELECT setval('thingful_things_id_seq', ?)`,
+      [things[things.length - 1].id],
     )
-    .then(() =>
-      reviews.length && db.into('thingful_reviews').insert(reviews)
-    )
+  })
+    
 }
 
 function seedMaliciousThing(db, user, thing) {
